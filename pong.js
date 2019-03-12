@@ -6,11 +6,6 @@ function main(){
   canvas.height = 400;
 
   var ctx = canvas.getContext("2d");
-
-  window.onkeydown = (e) => {
-    e.preventDefault();
-    console.log(e.key);
- }
   //-- Raquetas
   ctx.fillStyle = 'white';
   ctx.fillRect(50,180, 10, 40)
@@ -66,7 +61,46 @@ function main(){
       this.y = this.y_ini;
     }
   }
+  var raqueta = {
+    //-- Posición inicial de la pelota
+    x_ini: 50,
+    y_ini: 180,
+    //-- Dimensiones de la Bola
+    width: 10,
+    height: 40,
+    //-- Coornenadas
+    x : 0,
+    y : 0,
+    //-- Velocidad
+    vx : 0,
+    vy : 0,
+    //-- Contexto
+    ctx: null,
+    //-- Inicializar la bola
+    init: function(ctx) {
+      this.ctx = ctx;
+      this.reset();
+    },
+    //-- Dibujar
+    draw: function () {
+      this.ctx.fillStyle = 'white';
+      this.ctx.fillRect(this.x, this.y, this.width, this.height)
+    },
+    //-- Update
+    update: function () {
+      console.log(this.y);
+      this.x += this.vx;
+      this.y = this.vy;
+    },
+    //-- Reset: Set the ball to the initial state
+    reset: function() {
+      this.x = this.x_ini;
+      this.y = this.y_ini;
+    }
+  }
   //-- Inicializar y pintar la bola
+  raqueta.init(ctx)
+  raqueta.draw()
   bola.init(ctx)
   bola.draw()
   //-- Crear timer para la animación
@@ -83,23 +117,49 @@ function main(){
       //-- en su primer parámetro
       timer = setInterval(()=>{
         //-- Esto se ejecuta cada 20ms
+        raqueta.update()
         //-- Actualizar la bola
         bola.update();
         //-- Borrar el canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        raqueta.draw()
         //-- Dibuar la bola
         bola.draw();
         //-- Si la bola llega a la parte derecha del canvas:
         //-- Terminar
-        if (bola.x > canvas.width) {
+        if (bola.x > canvas.width || bola.x < 0) {
+          bola.vx = -bola.vx
           //-- Eliminar el timer
-          clearInterval(timer)
-          timer = null;
+          //clearInterval(timer)
+          //timer = null;
+          //bola.update();
           //-- Bola a su posicion inicial
-          bola.reset();
+          //bola.reset();
           //-- Dibujar la bola en pos. inicial
-          bola.draw();
+          //bola.draw();
+        };
+        if (bola.y > canvas.height || bola.y < 0) {
+          bola.vy = -bola.vy
+          //bola.update();
+          //bola.draw();
         }
+        window.onkeydown = (e) => {
+          e.preventDefault();
+          console.log(e.key);
+          switch (e.key) {
+            case 'w':
+              raqueta.vy = 5
+              raqueta.update()
+              console.log('hola');
+              break;
+            case 's':
+              raqueta.vy = -5
+              raqueta.update()
+              break;
+            default:
+              break;
+          }
+       }
       },20); //-- timer
     }
   } //-- Fin onclick
