@@ -1,3 +1,39 @@
+function raqueta(posx,posy){
+  //-- Posición inicial de la pelota
+  this.x_ini = posx;
+  this.y_ini = posy;
+  //-- Dimensiones de la Bola
+  this.width = 10;
+  this.height = 40;
+  //-- Coornenadas
+  this.x =  0;
+  this.y = 0;
+  //-- Velocidad
+  this.vx = 0;
+  this.vy = 0;
+  //-- Contexto
+  this.ctx = null;
+  //-- Inicializar la bola
+  this.init = function(ctx) {
+    this.ctx = ctx;
+    this.reset();
+  };
+  //-- Dibujar
+  this.draw = function () {
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillRect(this.x, this.y, this.width, this.height)
+  };
+  //-- Update
+  this.update = function () {
+    this.x += this.vx;
+    this.y += this.vy;
+  };
+  //-- Reset: Set the ball to the initial state
+  this.reset = function() {
+    this.x = this.x_ini;
+    this.y = this.y_ini;
+  };
+}
 function main(){
   console.log("Pong: Main: Start!")
 
@@ -6,24 +42,7 @@ function main(){
   canvas.height = 400;
 
   var ctx = canvas.getContext("2d");
-  //-- Raquetas
-  ctx.fillStyle = 'white';
-  ctx.fillRect(50,180, 10, 40)
-  ctx.fillRect(500,180, 10, 40)
-  //linea del centro
-  ctx.setLineDash([7, 10]);
-  ctx.moveTo(300, 0);
-  ctx.lineTo(300, 400);
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = 'white';
-  ctx.stroke();
-  //-- Texto solido
-  ctx.font = "80px Arial";
-  ctx.fillStyle = 'white'
-  ctx.fillText("0", 220, 70);
-  ctx.font = "80px Arial";
-  ctx.fillStyle = 'white'
-  ctx.fillText("0", 340, 70);
+
   //-- Definir el objeto BOLA
   var bola = {
     //-- Posición inicial de la pelota
@@ -61,46 +80,12 @@ function main(){
       this.y = this.y_ini;
     }
   }
-  var raqueta = {
-    //-- Posición inicial de la pelota
-    x_ini: 50,
-    y_ini: 180,
-    //-- Dimensiones de la Bola
-    width: 10,
-    height: 40,
-    //-- Coornenadas
-    x : 0,
-    y : 0,
-    //-- Velocidad
-    vx : 0,
-    vy : 0,
-    //-- Contexto
-    ctx: null,
-    //-- Inicializar la bola
-    init: function(ctx) {
-      this.ctx = ctx;
-      this.reset();
-    },
-    //-- Dibujar
-    draw: function () {
-      this.ctx.fillStyle = 'white';
-      this.ctx.fillRect(this.x, this.y, this.width, this.height)
-    },
-    //-- Update
-    update: function () {
-      console.log(this.y);
-      this.x += this.vx;
-      this.y = this.vy;
-    },
-    //-- Reset: Set the ball to the initial state
-    reset: function() {
-      this.x = this.x_ini;
-      this.y = this.y_ini;
-    }
-  }
-  //-- Inicializar y pintar la bola
-  raqueta.init(ctx)
-  raqueta.draw()
+  var player1 = new raqueta(50,180);
+  var player2 = new raqueta(500,180);
+  player1.init(ctx)
+  player2.init(ctx)
+  player1.draw();
+  player2.draw();
   bola.init(ctx)
   bola.draw()
   //-- Crear timer para la animación
@@ -117,14 +102,16 @@ function main(){
       //-- en su primer parámetro
       timer = setInterval(()=>{
         //-- Esto se ejecuta cada 20ms
-        raqueta.update()
+        player1.update()
+        player2.update()
         //-- Actualizar la bola
         bola.update();
         //-- Borrar el canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        raqueta.draw()
         //-- Dibuar la bola
         bola.draw();
+        player1.draw();
+        player2.draw();
         //-- Si la bola llega a la parte derecha del canvas:
         //-- Terminar
         if (bola.x > canvas.width || bola.x < 0) {
@@ -148,18 +135,55 @@ function main(){
           console.log(e.key);
           switch (e.key) {
             case 'w':
-              raqueta.vy = 5
-              raqueta.update()
-              console.log('hola');
+              player1.vy = -5;
+              player1.update()
+              player2.update()
               break;
             case 's':
-              raqueta.vy = -5
-              raqueta.update()
+              player1.vy = 5;
+              player1.update()
+              player2.update()
+              break;
+            case 'ArrowUp':
+              player2.vy = -5;
+              player1.update()
+              player2.update()
+              break;
+            case 'ArrowDown':
+              player2.vy = 5;
+              player1.update()
+              player2.update()
               break;
             default:
               break;
           }
-       }
+        }
+        window.onkeyup = (e) => {
+          switch (e.key) {
+            case 'w':
+              player1.vy = 0;
+              player1.update()
+              player2.update()
+              break;
+            case 's':
+              player1.vy = 0;
+              player1.update()
+              player2.update()
+              break;
+            case 'ArrowUp':
+              player2.vy = 0;
+              player1.update()
+              player2.update()
+              break;
+            case 'ArrowDown':
+              player2.vy = 0;
+              player1.update()
+              player2.update()
+              break;
+            default:
+              break;
+          }
+        }
       },20); //-- timer
     }
   } //-- Fin onclick
