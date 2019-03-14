@@ -34,6 +34,44 @@ function raqueta(posx,posy){
     this.y = this.y_ini;
   };
 }
+//-- Definir el objeto BOLA
+function pelota(){
+  //-- Posición inicial de la pelota
+  this.x_ini = 61,
+  this.y_ini = 195,
+  //-- Dimensiones de la Bola
+  this.width = 5,
+  this.height = 5,
+  //-- Coornenadas
+  this.x = 0,
+  this.y = 0,
+  //-- Velocidad
+  this.vx = 4,
+  this.vy = 1,
+  //-- Contexto
+  this.ctx = null,
+  //-- Inicializar la bola
+  this.init = function(ctx) {
+    this.ctx = ctx;
+    this.reset();
+  },
+  //-- Dibujar
+  this.draw = function () {
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillRect(this.x, this.y, this.width, this.height)
+  },
+  //-- Update
+  this.update = function () {
+    this.x += this.vx;
+    this.y += this.vy;
+  },
+  //-- Reset: Set the ball to the initial state
+  this.reset = function() {
+    this.x = this.x_ini;
+    this.y = this.y_ini;
+  }
+}
+
 function main(){
   console.log("Pong: Main: Start!")
 
@@ -43,45 +81,9 @@ function main(){
 
   var ctx = canvas.getContext("2d");
 
-  //-- Definir el objeto BOLA
-  var bola = {
-    //-- Posición inicial de la pelota
-    x_ini: 61,
-    y_ini: 195,
-    //-- Dimensiones de la Bola
-    width: 5,
-    height: 5,
-    //-- Coornenadas
-    x : 0,
-    y : 0,
-    //-- Velocidad
-    vx : 4,
-    vy : 1,
-    //-- Contexto
-    ctx: null,
-    //-- Inicializar la bola
-    init: function(ctx) {
-      this.ctx = ctx;
-      this.reset();
-    },
-    //-- Dibujar
-    draw: function () {
-      this.ctx.fillStyle = 'white';
-      this.ctx.fillRect(this.x, this.y, this.width, this.height)
-    },
-    //-- Update
-    update: function () {
-      this.x += this.vx;
-      this.y += this.vy;
-    },
-    //-- Reset: Set the ball to the initial state
-    reset: function() {
-      this.x = this.x_ini;
-      this.y = this.y_ini;
-    }
-  }
   var player1 = new raqueta(50,180);
   var player2 = new raqueta(500,180);
+  var bola = new pelota();
   player1.init(ctx)
   player2.init(ctx)
   player1.draw();
@@ -102,18 +104,19 @@ function main(){
       //-- en su primer parámetro
       timer = setInterval(()=>{
         //-- Esto se ejecuta cada 20ms
+        //actualizar jugadores
         player1.update()
         player2.update()
         //-- Actualizar la bola
         bola.update();
         //-- Borrar el canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        //-- Dibuar la bola
+        //-- Dibuar la bola y raquetas
         bola.draw();
         player1.draw();
         player2.draw();
         //-- Si la bola llega a la parte derecha del canvas:
-        //-- Terminar
+        //-- Rebotar
         if (bola.x > canvas.width || bola.x < 0) {
           bola.vx = -bola.vx
           //-- Eliminar el timer
@@ -127,8 +130,12 @@ function main(){
         };
         if (bola.y > canvas.height || bola.y < 0) {
           bola.vy = -bola.vy
-          //bola.update();
-          //bola.draw();
+        }
+        if (bola.x < (player1.x + player1.width) && bola.y < (player1.y + player1.height) && bola.y > player1.y) {
+          bola.vx = -bola.vx
+        }
+        if (bola.x > player2.x && bola.y < (player2.y + player2.height) && bola.y > player2.y) {
+          bola.vx = -bola.vx
         }
         window.onkeydown = (e) => {
           e.preventDefault();
@@ -136,23 +143,15 @@ function main(){
           switch (e.key) {
             case 'w':
               player1.vy = -5;
-              player1.update()
-              player2.update()
               break;
             case 's':
               player1.vy = 5;
-              player1.update()
-              player2.update()
               break;
             case 'ArrowUp':
               player2.vy = -5;
-              player1.update()
-              player2.update()
               break;
             case 'ArrowDown':
               player2.vy = 5;
-              player1.update()
-              player2.update()
               break;
             default:
               break;
@@ -162,23 +161,15 @@ function main(){
           switch (e.key) {
             case 'w':
               player1.vy = 0;
-              player1.update()
-              player2.update()
               break;
             case 's':
               player1.vy = 0;
-              player1.update()
-              player2.update()
               break;
             case 'ArrowUp':
               player2.vy = 0;
-              player1.update()
-              player2.update()
               break;
             case 'ArrowDown':
               player2.vy = 0;
-              player1.update()
-              player2.update()
               break;
             default:
               break;
