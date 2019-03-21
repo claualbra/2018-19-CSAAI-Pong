@@ -71,7 +71,20 @@ function pelota(){
     this.y = this.y_ini;
   }
 }
-
+function contador(){
+  this.ctx = null,
+  this.init = function(ctx) {
+    this.ctx = ctx;
+  },
+  this.draw = function () {
+    this.ctx.font = "80px Arial";
+    this.ctx.fillStyle = 'white'
+    this.ctx.fillText("0", 220, 70);
+    this.ctx.font = "80px Arial";
+    this.ctx.fillStyle = 'white'
+    this.ctx.fillText("0", 340, 70);
+  }
+}
 function main(){
   console.log("Pong: Main: Start!")
 
@@ -84,12 +97,22 @@ function main(){
   var player1 = new raqueta(50,180);
   var player2 = new raqueta(500,180);
   var bola = new pelota();
+  var puntos = new contador();
   player1.init(ctx)
   player2.init(ctx)
   player1.draw();
   player2.draw();
   bola.init(ctx)
   bola.draw()
+  puntos.init(ctx);
+  puntos.draw();
+  //linea del centro
+  ctx.setLineDash([7, 10]);
+  ctx.moveTo(300, 0);
+  ctx.lineTo(300, 400);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = 'white';
+  ctx.stroke();
   //-- Crear timer para la animación
   //-- Inicialmente a null
   var timer = null;
@@ -115,6 +138,14 @@ function main(){
         bola.draw();
         player1.draw();
         player2.draw();
+        puntos.draw();
+        //linea del centro
+        ctx.setLineDash([7, 10]);
+        ctx.moveTo(300, 0);
+        ctx.lineTo(300, 400);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
         //-- Si la bola llega a la parte derecha del canvas:
         //-- Rebotar
         if (bola.x > canvas.width || bola.x < 0) {
