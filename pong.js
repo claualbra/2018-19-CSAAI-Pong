@@ -37,8 +37,10 @@ function raqueta(posx,posy){
 //-- Definir el objeto BOLA
 function pelota(){
   //-- Posición inicial de la pelota
-  this.x_ini = 61,
-  this.y_ini = 195,
+  this.x_ini1 = 61,
+  this.y_ini1 = 195,
+  this.x_ini2 = 492,
+  this.y_ini2 = 195,
   //-- Dimensiones de la Bola
   this.width = 5,
   this.height = 5,
@@ -46,14 +48,14 @@ function pelota(){
   this.x = 0,
   this.y = 0,
   //-- Velocidad
-  this.vx = 4,
-  this.vy = 1,
+  this.vx = 6,
+  this.vy = 2,
   //-- Contexto
   this.ctx = null,
   //-- Inicializar la bola
   this.init = function(ctx) {
     this.ctx = ctx;
-    this.reset();
+    this.reset1();
   },
   //-- Dibujar
   this.draw = function () {
@@ -66,23 +68,43 @@ function pelota(){
     this.y += this.vy;
   },
   //-- Reset: Set the ball to the initial state
-  this.reset = function() {
-    this.x = this.x_ini;
-    this.y = this.y_ini;
+  this.reset1 = function() {
+    this.x = this.x_ini1;
+    this.y = this.y_ini1;
+  }
+  this.reset2 = function() {
+    this.x = this.x_ini2;
+    this.y = this.y_ini2;
   }
 }
 function contador(){
   this.ctx = null,
+  this.punt1 = 0;
+  this.punt2 = 0;
+  this.punt_init1 = 0;
+  this.punt_init2 = 0;
+
   this.init = function(ctx) {
     this.ctx = ctx;
+    this.reset();
   },
   this.draw = function () {
     this.ctx.font = "80px Arial";
     this.ctx.fillStyle = 'white'
-    this.ctx.fillText("0", 220, 70);
+    this.ctx.fillText(this.punt_init1, 220, 70);
     this.ctx.font = "80px Arial";
     this.ctx.fillStyle = 'white'
-    this.ctx.fillText("0", 340, 70);
+    this.ctx.fillText(this.punt_init2, 340, 70);
+  },
+  //-- Update
+  this.update = function () {
+    this.punt_init1 = this.punt1;
+    this.punt_init2 = this.punt2;
+  },
+  //-- Reset: Set the ball to the initial state
+  this.reset = function() {
+    this.punt_init1 = 0;
+    this.punt_init2 = 0;
   }
 }
 function main(){
@@ -132,6 +154,7 @@ function main(){
         player2.update()
         //-- Actualizar la bola
         bola.update();
+        puntos.update();
         //-- Borrar el canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         //-- Dibuar la bola y raquetas
@@ -148,17 +171,55 @@ function main(){
         ctx.stroke();
         //-- Si la bola llega a la parte derecha del canvas:
         //-- Rebotar
-        if (bola.x > canvas.width || bola.x < 0) {
-          bola.vx = -bola.vx
+        if (bola.x > canvas.width) {
+          puntos.punt1 += 1;
           //-- Eliminar el timer
-          //clearInterval(timer)
-          //timer = null;
-          //bola.update();
+          clearInterval(timer)
+          timer = null;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
           //-- Bola a su posicion inicial
-          //bola.reset();
+          //linea del centro
+          ctx.setLineDash([7, 10]);
+          ctx.moveTo(300, 0);
+          ctx.lineTo(300, 400);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'white';
+          ctx.stroke();
+
+          bola.reset2();
+          player1.reset();
+          player2.reset();
+          puntos.update();
           //-- Dibujar la bola en pos. inicial
-          //bola.draw();
-        };
+          bola.draw();
+          player1.draw();
+          player2.draw();
+          puntos.draw();
+        }
+        if (bola.x < 0) {
+          puntos.punt2 += 1;
+          clearInterval(timer)
+          timer = null;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          //-- Bola a su posicion inicial
+          //linea del centro
+          ctx.setLineDash([7, 10]);
+          ctx.moveTo(300, 0);
+          ctx.lineTo(300, 400);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'white';
+          ctx.stroke();
+
+          bola.reset1();
+          player1.reset();
+          player2.reset();
+          puntos.update();
+          //-- Dibujar la bola en pos. inicial
+          bola.draw();
+          player1.draw();
+          player2.draw();
+          puntos.draw();
+        }
         if (bola.y > canvas.height || bola.y < 0) {
           bola.vy = -bola.vy
         }
@@ -170,7 +231,6 @@ function main(){
         }
         window.onkeydown = (e) => {
           e.preventDefault();
-          console.log(e.key);
           switch (e.key) {
             case 'w':
               player1.vy = -5;
