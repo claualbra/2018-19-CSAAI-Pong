@@ -224,10 +224,18 @@ function main(){
           bola.vy = -bola.vy
         }
         if (bola.x < (player1.x + player1.width) && bola.y < (player1.y + player1.height) && bola.y > player1.y) {
-          bola.vx = -bola.vx
+          if (bola.x < player1.x) {
+            bola.vx = bola.vx
+          }else {
+            bola.vx = -bola.vx
+          }
         }
         if (bola.x > player2.x && bola.y < (player2.y + player2.height) && bola.y > player2.y) {
-          bola.vx = -bola.vx
+          if (bola.x > (player2.x + player2.width)) {
+            bola.vx = bola.vx
+          }else {
+            bola.vx = -bola.vx
+          }
         }
         window.onkeydown = (e) => {
           e.preventDefault();
