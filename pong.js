@@ -269,4 +269,29 @@ function main(){
       },20); //-- timer
     }
   } //-- Fin onclick
+  var reset = document.getElementById('reset')
+  reset.onclick = () => {
+    puntos.punt1 = 0;
+    puntos.punt2 = 0;
+    console.log('hola');
+    clearInterval(timer);
+    timer = null;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    //-- Bola a su posicion inicial
+    //linea del centro
+    ctx.setLineDash([7, 10]);
+    ctx.moveTo(300, 0);
+    ctx.lineTo(300, 400);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'white';
+    ctx.stroke();
+    player1.init(ctx);
+    player2.init(ctx);
+    player1.draw();
+    player2.draw();
+    bola.init(ctx);
+    bola.draw();
+    puntos.init(ctx);
+    puntos.draw();
+  }
 }
